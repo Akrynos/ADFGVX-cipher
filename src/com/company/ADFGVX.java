@@ -130,6 +130,9 @@ public class ADFGVX {
         return result;
     }
 
+    private void swapColumns(){
+
+    }
 
  /*   public void readEncryptedData() {
         try {
