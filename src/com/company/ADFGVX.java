@@ -1,5 +1,7 @@
 package com.company;
 
+import javax.naming.ldap.SortKey;
+import javax.sql.rowset.spi.SyncProvider;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -14,11 +16,9 @@ public class ADFGVX {
 
     Scanner console = new Scanner(System.in);
     private HashMap<Character, String> encryptValues = new HashMap<Character, String>();
+    private HashMap<String, Character> tempDecryptValues = new HashMap<String, Character>();
     private char[] charArray;
     private LinkedList<String> coordsArray = new LinkedList<>();
-    private HashMap<String, Character> tempDecryptValues = new HashMap<String, Character>();
-    private final String ENCRYPTED_FILE = "Encrypted.txt";
-    private final String DECRYPTED_FILE = "Decrypted.txt";
     String key;
     String text;
     private int totalRows;
@@ -126,12 +126,43 @@ public class ADFGVX {
             tempVal--;
         }while(tempVal>1);
         System.out.println(sortedKey);
-
+        swapColumns(createOrderArray(sortedKey), encrypted);
         return result;
     }
 
-    private void swapColumns(){
+    private Integer[] createOrderArray(ArrayList<String> SK){
+        Integer[] OrderArray = new Integer[SK.size()];
+        int i=0;
+        for(String s : SK){
+            OrderArray[i] = Character.getNumericValue(s.toCharArray()[1]);
+            System.out.print(" # " + OrderArray[i]);
+            i++;
+        }
+        return OrderArray;
+    }
 
+    private void swapColumns(Integer [] order, Character[][] opTable){
+        Character [][] tempOpTable = new Character[opTable.length][opTable[0].length];
+        tempOpTable = opTable;
+        for(Character [] c : opTable){
+            for(Character a : c){
+                System.out.print(a + ". ");
+            }
+            System.out.println(' ');
+        }
+        if(order.length != opTable[0].length){
+            System.out.println("Error - Order table and opTable has different length - error with key translation");
+        } else{
+            for(int i = 0; i< order.length; i++){
+                System.out.print(i+ "   ");
+                for(int j=0; j<opTable.length; j++){
+                    opTable[j][i]=tempOpTable[j][order[i]];
+                    System.out.print(opTable[j][i] + ". ");
+                }
+                System.out.println( ". ");
+            }
+
+        }
     }
 
  /*   public void readEncryptedData() {
