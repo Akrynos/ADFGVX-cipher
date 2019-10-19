@@ -15,6 +15,7 @@ import javafx.stage.Stage;
 
 public class Main extends Application
 {
+    public boolean progress = false;
     public static void main(String[] args)
     {
         Application.launch(args);
@@ -47,14 +48,18 @@ public class Main extends Application
         Label dec = new Label(" ");
         Label KEY = new Label("");
         TextField keyTextField = new TextField();
+        keyTextField.setPrefWidth(100);
         TextField textField = new TextField();
+        textField.setPrefWidth(250);
         TextField res = new TextField();
+        res.setPrefWidth(550);
         keyTextField.setText("ADME");
         textField.setText("SupeRTestowanko");
         Button gen = new Button("Generate table");
         Button encr = new Button("Encryption");
         Button decr = new Button("Decryption");
-
+        Label error = new Label("OK");
+        error.setStyle("-fx-font-size: 20; -fx-color: #ff3333; -fx-font-decoration: strong;");
         //Button generating tables
         gen.setOnAction(new EventHandler<ActionEvent>() {
             @Override public void handle(ActionEvent e) {
@@ -64,30 +69,42 @@ public class Main extends Application
                 cypher.loadDecryptValues();
                 dec.setText(cypher.returnDecryptHashMap());
                 dec.setWrapText(true);
-                KEY.setText(keyTextField.getText());
-                if(KEY.getText().length()%2 != 0){
-                    res.setText("Blad! Wprowadz klucz o parzystej ilosci znakow!");
-                } else cypher.getKey(KEY.getText());
+
+                if(keyTextField.getText().length()%2 != 0)
+                {
+                    error.setText("Blad! Wprowadz klucz o parzystej ilosci znakow!");
+                    progress=false;
+                }
+                else {
+                    error.setText("KEY OK!");
+                    KEY.setText(keyTextField.getText());
+                    cypher.getKey(keyTextField.getText());
+                    progress = true;
+                }
             }
         });
 
         //Button encrypting text
         encr.setOnAction(new EventHandler<ActionEvent>() {
             @Override public void handle(ActionEvent e) {
-                cypher.determineArrayRows(textField.getText());
-                cypher.encryptData();
+                if(progress) {
+                    cypher.determineArrayRows(textField.getText(), true);
+                    res.setText(cypher.encryptData());
+                }
             }
         });
 
         //Button decrypting text
         decr.setOnAction(new EventHandler<ActionEvent>() {
             @Override public void handle(ActionEvent e) {
-                cypher.determineArrayRows(textField.getText());
+                if (progress){
+                cypher.determineArrayRows(textField.getText(), false);
+                res.setText(cypher.decryptData());}
             }
         });
         HBox buttons = new HBox(gen, encr, decr );
         buttons.setSpacing(5);
-        HBox key = new HBox(insertKey, keyTextField);
+        HBox key = new HBox(insertKey, keyTextField, error);
         key.setSpacing(5);
         HBox text = new HBox(insertText, textField);
         text.setSpacing(5);
